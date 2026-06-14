@@ -1,0 +1,11 @@
+{
+  "entry": [
+    "index.ts",
+    "rules/**/*.ts"
+  ],
+  "project": [
+    "**/*.{js,ts}"
+  ],
+  "ignoreBinaries": [],
+  "ignoreDependencies": []
+}

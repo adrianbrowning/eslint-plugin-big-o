@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GHAISettings">{}</component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES6" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="JunieProject"><![CDATA[{}]]></component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>JavaScript and TypeScript</id>
+          </State>
+          <State>
+            <id>Perl5</id>
+          </State>
+          <State>
+            <id>Perl5 POD</id>
+          </State>
+          <State>
+            <id>Probable bugsJavaScript and TypeScript</id>
+          </State>
+          <State>
+            <id>RegExp</id>
+          </State>
+          <State>
+            <id>SQL</id>
+          </State>
+          <State>
+            <id>User defined</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>User defined</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+</project>
