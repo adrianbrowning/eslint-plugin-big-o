@@ -9,7 +9,14 @@
     "complexity",
     "performance"
   ],
-  "repository": "github:adrianbrowning/eslint-plugin-big-o",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrianbrowning/eslint-plugin-big-o.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adrianbrowning/eslint-plugin-big-o/issues"
+  },
+  "homepage": "https://github.com/adrianbrowning/eslint-plugin-big-o#readme",
   "author": "Adrian Elton-Browning",
   "license": "ISC",
   "type": "module",
