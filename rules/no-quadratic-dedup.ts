@@ -1,78 +1,98 @@
-import type { Rule } from 'eslint'
-import type { Node, CallExpression } from 'estree'
+import { ESLintUtils } from "@typescript-eslint/utils";
+import type { TSESTree } from "@typescript-eslint/utils";
 
-const rule: Rule.RuleModule = {
+const createRule = ESLintUtils.RuleCreator(name => `https://github.com/adrianbrowning/eslint-plugin-big-o/blob/main/docs/rules/${name}.md`);
+
+const rule = createRule({
+  name: "no-quadratic-dedup",
   meta: {
-    type: 'suggestion',
+    type: "suggestion",
     schema: [],
     messages: {
-      quadraticDedup: 'O(n²): arr.filter((item, i) => arr.findIndex(...) === i) is quadratic. Use a Map or Set for O(n) dedup.',
+      quadraticDedup: "O(n²): arr.filter((item, i) => arr.findIndex(...) === i) is quadratic. Use a Map or Set for O(n) dedup.",
+    },
+    docs: {
+      description: "Disallow O(n²) deduplication patterns using filter + findIndex",
     },
   },
+  defaultOptions: [],
   create(context) {
+    const services = ESLintUtils.getParserServices(context, true);
+    const checker = services.program?.getTypeChecker();
+
     return {
-      'CallExpression[callee.property.name="filter"]'(node: CallExpression) {
-        const callback = node.arguments[0]
-        if (!callback) return
+      "CallExpression[callee.property.name='filter']"(node: TSESTree.CallExpression) {
+        // Confirm receiver is an array type
+        if (checker) {
+          const callee = node.callee as TSESTree.MemberExpression;
+          const tsNode = services.esTreeNodeToTSNodeMap.get(callee.object);
+          const type = checker.getTypeAtLocation(tsNode);
+          if (!checker.isArrayType(type) && !checker.isTupleType(type)) return;
+        }
 
-        const params = 'params' in callback ? callback.params : []
-        if (!params || params.length < 2) return
+        const callback = node.arguments[0];
+        if (!callback) return;
 
-        const indexParam = params[1]
-        if (!indexParam || indexParam.type !== 'Identifier') return
-        const indexName = indexParam.name
+        const params = "params" in callback ? callback.params : [];
+        if (params.length < 2) return;
 
-        const body = ('body' in callback ? callback.body : null) as Node | null
-        findInNode(body, (n) => {
+        const indexParam = params[1];
+        if (!indexParam || indexParam.type !== "Identifier") return;
+        const indexName = indexParam.name;
+
+        const body = ("body" in callback ? callback.body : null) as TSESTree.Node | null;
+        findInNode(body, n => {
           if (
-            n.type === 'BinaryExpression' &&
-            n.operator === '===' &&
+            n.type === "BinaryExpression" &&
+            n.operator === "===" &&
             (
               (isFindIndexCall(n.left) && isIdent(n.right, indexName)) ||
               (isFindIndexCall(n.right) && isIdent(n.left, indexName))
             )
           ) {
-            context.report({ node, messageId: 'quadraticDedup' })
-            return true
+            context.report({ node, messageId: "quadraticDedup" });
+            return true;
           }
-          return false
-        })
+          return false;
+        });
       },
-    }
+    };
   },
-}
+});
 
-export default rule
+export default rule;
 
-function isFindIndexCall(node: Node): boolean {
+function isFindIndexCall(node: TSESTree.Node): boolean {
   return (
-    node.type === 'CallExpression' &&
-    node.callee.type === 'MemberExpression' &&
-    node.callee.property.type === 'Identifier' &&
-    node.callee.property.name === 'findIndex'
-  )
+    node.type === "CallExpression" &&
+    node.callee.type === "MemberExpression" &&
+    node.callee.property.type === "Identifier" &&
+    node.callee.property.name === "findIndex"
+  );
 }
 
-function isIdent(node: Node, name: string): boolean {
-  return node.type === 'Identifier' && node.name === name
+function isIdent(node: TSESTree.Node, name: string): boolean {
+  return node.type === "Identifier" && node.name === name;
 }
 
-function findInNode(node: Node | null | undefined, visitor: (n: Node) => boolean): boolean {
-  if (!node || typeof node !== 'object') return false
-  if (Array.isArray(node)) {
-    for (const child of node as Node[]) {
-      if (findInNode(child, visitor)) return true
-    }
-    return false
+function findInNodes(nodes: Array<TSESTree.Node>, visitor: (n: TSESTree.Node) => boolean): boolean {
+  for (const child of nodes) {
+    if (findInNode(child, visitor)) return true;
   }
-  if (!('type' in node)) return false
-  if (visitor(node)) return true
+  return false;
+}
+
+function findInNode(node: TSESTree.Node | null | undefined, visitor: (n: TSESTree.Node) => boolean): boolean {
+  if (!node || typeof node !== "object") return false;
+  if (Array.isArray(node)) return findInNodes(node as Array<TSESTree.Node>, visitor);
+  if (!("type" in node)) return false;
+  if (visitor(node)) return true;
   for (const key of Object.keys(node)) {
-    if (key === 'parent') continue
-    const child = (node as unknown as Record<string, unknown>)[key]
-    if (child && typeof child === 'object') {
-      if (findInNode(child as Node, visitor)) return true
+    if (key === "parent") continue;
+    const child = (node as unknown as Record<string, unknown>)[key];
+    if (child && typeof child === "object") {
+      if (findInNode(child as TSESTree.Node, visitor)) return true;
     }
   }
-  return false
+  return false;
 }

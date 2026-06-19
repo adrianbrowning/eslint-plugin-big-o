@@ -3,13 +3,16 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist",
-    "incremental": false
+    "incremental": false,
+    "types": ["node"],
+    "allowImportingTsExtensions": true
   },
   "include": [
     "eslint.config.ts",
     "eslint.config.style.ts",
     "./rules/**/*.ts",
-    "index.ts"
+    "index.ts",
+    "./tests/**/*.ts"
   ],
   "exclude": [
     "node_modules"
