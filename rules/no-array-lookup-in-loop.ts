@@ -36,8 +36,8 @@ const rule = createRule({
 
         const method = node.callee.property.name;
 
-        // Skip string.includes — substring search, not O(n²) array scan
-        if (checker && method === "includes") {
+        // Skip string methods — substring search, not O(n²) array scan
+        if (checker && (method === "includes" || method === "indexOf")) {
           const tsNode = services.esTreeNodeToTSNodeMap.get(node.callee.object);
           if (checker.getTypeAtLocation(tsNode).flags & ts.TypeFlags.StringLike) {
             return;

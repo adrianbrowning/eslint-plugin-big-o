@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-big-o",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "ESLint rules for detecting algorithmic complexity issues (Big-O)",
   "keywords": [
     "eslint",

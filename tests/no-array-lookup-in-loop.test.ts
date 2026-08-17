@@ -53,6 +53,12 @@ tester.run("no-array-lookup-in-loop", rule, {
       filename: "test.ts",
       name: "string.includes inside filter",
     },
+    // string.indexOf is substring search, not array scan — not O(n²)
+    {
+      code: `const rawHeaders = 'Content-Type: text/html'; rawHeaders.split("\\n").forEach(function parser(line) { const i = line.indexOf(":"); })`,
+      filename: "test.ts",
+      name: "string.indexOf inside forEach",
+    },
   ],
   invalid: [
     {
